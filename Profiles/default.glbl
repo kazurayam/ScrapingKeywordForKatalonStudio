@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>default</name>
+   <tag></tag>
+   <defaultProfile>true</defaultProfile>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'http://www.data.jma.go.jp/obd/stats/data/mdrr/docs/csv_dl_format_prenh.html'</initValue>
+      <name>URL_JMA_RAIN_SITE</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>[('1h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre1h00_rct.csv', ('3h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre3h00_rct.csv', ('6h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre6h00_rct.csv', ('12h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre12h00_rct.csv', ('24h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre24h00_rct.csv', ('48h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre48h00_rct.csv', ('72h') : 'http://www.data.jma.go.jp/obd/stats/data/mdrr/pre_rct/alltable/pre72h00_rct.csv']</initValue>
+      <name>URL_JMA_RAIN_DATA</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'https://www.fsa.go.jp/policy/nisa2/about/tsumitate/target/index.html'</initValue>
+      <name>URL_FSA_NISA_SITE</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>[('23') : 'https://www.fsa.go.jp/policy/nisa/20170614-2/23.xlsx', ('24') : 'https://www.fsa.go.jp/policy/nisa/20170614-2/24.pdf']</initValue>
+      <name>URL_FSA_NISA_DATA</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>
