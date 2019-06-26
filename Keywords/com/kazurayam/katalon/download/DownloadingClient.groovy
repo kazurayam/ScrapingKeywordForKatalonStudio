@@ -1,38 +1,22 @@
-package com.kazurayam.ks.download
+package com.kazurayam.katalon.download
 
-import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
-import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
-import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
-import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import java.lang.reflect.Field
 
-import com.kms.katalon.core.annotation.Keyword
-import com.kms.katalon.core.checkpoint.Checkpoint
-import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile
-import com.kms.katalon.core.model.FailureHandling
-import com.kms.katalon.core.testcase.TestCase
-import com.kms.katalon.core.testdata.TestData
-import com.kms.katalon.core.testobject.TestObject
-import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
-import com.kms.katalon.core.webservice.common.BasicRequestor
-import internal.GlobalVariable
-import com.kms.katalon.core.testobject.RequestObject
-import com.kms.katalon.core.testobject.ResponseObject
-import org.apache.commons.lang.StringUtils
-import com.kms.katalon.core.webservice.constants.RequestHeaderConstants
-import com.kms.katalon.core.webservice.common.RestfulClient
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
+
+import org.apache.commons.lang.StringUtils
+
 import com.kms.katalon.constants.GlobalStringConstants
-import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper
-import java.lang.reflect.Field
+import com.kms.katalon.core.network.ProxyInformation
+import com.kms.katalon.core.testobject.RequestObject
+import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.testobject.TestObjectProperty
-import com.kms.katalon.core.webservice.support.UrlEncoder
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import com.kms.katalon.core.webservice.common.BasicRequestor
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
+import com.kms.katalon.core.webservice.support.UrlEncoder
 
 /**
  * <p>A modification of com.kms.katalon.core.webservice.common.RestfulClient class.</p>
@@ -44,15 +28,19 @@ import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
  * <p>DownloadableResponseObject offers the getInputStream() method.</p>
  * 
  */
-public class WebResourceDownloader extends BasicRequestor {
-	
+public class DownloadingClient extends BasicRequestor {
+
 	private static final String SSL = RequestHeaderConstants.SSL
-	
+
 	private static final String HTTPS = RequestHeaderConstants.HTTPS
 
 	private static final String DEFAULT_USER_AGENT = GlobalStringConstants.APP_NAME
 
 	private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT
+	
+	DownloadingClient(String projectDir, ProxyInformation proxyInformation) {
+        super(projectDir, proxyInformation)
+    }
 
 	@Override
 	public BufferedResponseObject send(RequestObject request) throws Exception {
@@ -133,10 +121,10 @@ public class WebResourceDownloader extends BasicRequestor {
 						}
 
 						Field httpsURLConnectionField = delegateConnection.getClass()
-						.getDeclaredField("httpsURLConnection");
+								.getDeclaredField("httpsURLConnection");
 						httpsURLConnectionField.setAccessible(true);
 						HttpsURLConnection httpsURLConnection = (HttpsURLConnection) httpsURLConnectionField
-						.get(delegateConnection);
+								.get(delegateConnection);
 
 						methodField.set(httpsURLConnection, method);
 					} catch (Exception ignored) {
@@ -168,7 +156,7 @@ public class WebResourceDownloader extends BasicRequestor {
 		if (!StringUtils.isEmpty(paramString.toString())) {
 			URL url = new URL(request.getRestUrl());
 			request.setRestUrl(
-			request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
+					request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
 		}
 	}
 
@@ -187,13 +175,14 @@ public class WebResourceDownloader extends BasicRequestor {
 		long waitingTime = System.currentTimeMillis() - startTime
 		long contentDownloadTime = 0L
 
-		char[] buffer = new char[1024]
+		byte[] buffer = new byte[1024]
 		long bodyLength = 0L
 
 		/*
 		 * we use PipedOutputStream & PipedInputStream for effective buffering
 		 */
 		PipedOutputStream out = new PipedOutputStream()
+		PipedInputStream pipedInput = new PipedInputStream(out)
 		
 		InputStream inputStream = null
 		try {
@@ -227,19 +216,20 @@ public class WebResourceDownloader extends BasicRequestor {
 			}
 		}
 		
-		PipedInputStream pipedInput = new PipedInputStream(out)
-
-		long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn)
-		BufferedResponseObject responseObject = new BufferedResponseObject(sb.toString())
+		
+		BufferedResponseObject responseObject = new BufferedResponseObject()
+		
 		responseObject.setInputStream(pipedInput)
+		//
 		responseObject.setContentType(conn.getContentType());
 		responseObject.setHeaderFields(conn.getHeaderFields());
 		responseObject.setStatusCode(statusCode);
 		responseObject.setResponseBodySize(bodyLength);
+		long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn)
 		responseObject.setResponseHeaderSize(headerLength);
 		responseObject.setWaitingTime(waitingTime);
 		responseObject.setContentDownloadTime(contentDownloadTime);
-		
+
 		conn.disconnect();
 
 		return responseObject;
