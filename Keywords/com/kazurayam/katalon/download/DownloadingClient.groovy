@@ -215,6 +215,13 @@ public class DownloadingClient extends BasicRequestor {
 					e.printStackTrace()
 				}
 			}
+			if (out != null) {
+				try {
+					out.close()
+				} catch (IOException e) {
+					e.printStackTrace()
+				}
+			}
 		}
 
 
