@@ -54,16 +54,16 @@ class DownloadingClientTest {
 				int len = 0
 				while (true) {
 					len = is.read(buffer)
-					
+
 					throw new RuntimeException("blocked at the above line")
-					
+
 					if (len == -1) {
 						break
 					}
 					out.write(buffer, 0, len)
-					
+
 				}
-			
+
 			} finally {
 				is.close()
 				out.flush()
