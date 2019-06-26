@@ -37,13 +37,13 @@ public class DownloadingClient extends BasicRequestor {
 	private static final String DEFAULT_USER_AGENT = GlobalStringConstants.APP_NAME
 
 	private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT
-	
+
 	DownloadingClient(String projectDir, ProxyInformation proxyInformation) {
-        super(projectDir, proxyInformation)
-    }
+		super(projectDir, proxyInformation)
+	}
 
 	@Override
-	public BufferedResponseObject send(RequestObject request) throws Exception {
+	public StreamingResponseObject send(RequestObject request) throws Exception {
 		return sendRequest(request)
 	}
 
@@ -52,7 +52,7 @@ public class DownloadingClient extends BasicRequestor {
 	 * @return
 	 * @throws Exception
 	 */
-	private BufferedResponseObject sendRequest(RequestObject request) throws Exception {
+	private StreamingResponseObject sendRequest(RequestObject request) throws Exception {
 		if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
 			SSLContext sc = SSLContext.getInstance(SSL);
 			sc.init(null, getTrustManagers(), new java.security.SecureRandom());
@@ -90,7 +90,7 @@ public class DownloadingClient extends BasicRequestor {
 		 * this is the sole difference from the com.kms.katalon.core.webservice.commonRestfulClient
 		 */
 		//return response(httpConnection)
-		BufferedResponseObject bro = responseWithHack(httpConnection)
+		StreamingResponseObject bro = responseWithHack(httpConnection)
 		return bro;
 	}
 
@@ -166,7 +166,7 @@ public class DownloadingClient extends BasicRequestor {
 	 * returns a BufferedResponsePobject with an InputSteam for the buffering file.
 	 * @author kazurayam
 	 */
-	private BufferedResponseObject responseWithHack(HttpURLConnection conn) throws Exception {
+	private StreamingResponseObject responseWithHack(HttpURLConnection conn) throws Exception {
 		if (conn == null) {
 			return null
 		}
@@ -178,12 +178,14 @@ public class DownloadingClient extends BasicRequestor {
 		byte[] buffer = new byte[1024]
 		long bodyLength = 0L
 
-		/*
-		 * we use PipedOutputStream & PipedInputStream for effective buffering
-		 */
-		PipedOutputStream out = new PipedOutputStream()
-		PipedInputStream pipedInput = new PipedInputStream(out)
-		
+		PipedOutputStream pipedOutput = new PipedOutputStream()
+		// enable buffering
+		int BUFFER_SIZE = 1024 * 1000;
+		OutputStream out = new BufferedOutputStream(pipedOutput, BUFFER_SIZE)
+
+		PipedInputStream pipedInput = new PipedInputStream()
+		pipedInput.connect(pipedOutput)
+
 		InputStream inputStream = null
 		try {
 			inputStream = ((statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream())
@@ -199,7 +201,6 @@ public class DownloadingClient extends BasicRequestor {
 					out.write(buffer, 0, len)
 					bodyLength += len
 					startTime = System.currentTimeMillis()
-
 				}
 			} else {
 				throw new IOException("HttpURLConnection returned null as inputstream")
@@ -215,10 +216,10 @@ public class DownloadingClient extends BasicRequestor {
 				}
 			}
 		}
-		
-		
-		BufferedResponseObject responseObject = new BufferedResponseObject()
-		
+
+
+		StreamingResponseObject responseObject = new StreamingResponseObject()
+
 		responseObject.setInputStream(pipedInput)
 		//
 		responseObject.setContentType(conn.getContentType());

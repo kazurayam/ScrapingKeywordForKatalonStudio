@@ -37,7 +37,7 @@ class DownloadingClientTest {
 		Path outFile = caseOutputDir.resolve('output.pdf')
 		OutputStream out = new FileOutputStream(outFile.toFile())
 		//
-		Map data = (Map)GlobalVariable.URL_JMA_RAIN_DATA
+		Map data = (Map)GlobalVariable.JMA_RAIN_DATA_URL
 		String url = data.get('1h')
 
 		// when:
@@ -46,7 +46,7 @@ class DownloadingClientTest {
 		RequestObject request = new RequestObject()
 		request.setRestRequestMethod('GET')
 		request.setRestUrl(url)
-		BufferedResponseObject response = client.send(request)
+		StreamingResponseObject response = client.send(request)
 		response.getInputStream().with { is ->
 			try {
 				byte[] buffer = new byte[1024]

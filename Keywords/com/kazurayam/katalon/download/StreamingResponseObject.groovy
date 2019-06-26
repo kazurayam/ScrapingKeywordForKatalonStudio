@@ -2,15 +2,15 @@ package com.kazurayam.katalon.download
 
 import com.kms.katalon.core.testobject.ResponseObject
 
-public class BufferedResponseObject extends ResponseObject {
+public class StreamingResponseObject extends ResponseObject {
 
 	private InputStream inputStream_ = null
 
-	BufferedResponseObject() {
+	StreamingResponseObject() {
 		super()
 	}
 
-	BufferedResponseObject(String responseText) {
+	StreamingResponseObject(String responseText) {
 		super(responseText)
 	}
 
