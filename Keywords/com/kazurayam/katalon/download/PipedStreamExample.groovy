@@ -19,6 +19,7 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import internal.GlobalVariable
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
+import java.util.concurrent.CountDownLatch
 
 /**
  * http://www.kab-studio.biz/Programing/JavaA2Z/Word/00000896.html
@@ -32,17 +33,19 @@ public class PipedStreamExample {
 
 	PipedOutputStream pos_ = null
 	PipedInputStream pis_ = null
-
+	
+	private static CountDownLatch latch = new CountDownLatch(1);
+	
 	public void execute() throws IOException, InterruptedException {
 
 		pos_ = new PipedOutputStream()
 		pis_ = new PipedInputStream(pos_)
 
 		// This Thread writes data into pipe
-		Thread pipeWriter = new PipeWriter(pos_)
+		Thread pipeWriter = new PipeWriter(pos_, latch)
 
 		// This Thread reads data from pipe
-		Thread pipeReader = new PipeReader(pis_)
+		Thread pipeReader = new PipeReader(pis_, latch)
 
 		pipeWriter.start()
 		pipeReader.start()
@@ -52,18 +55,18 @@ public class PipedStreamExample {
 
 		pis_.close()
 		pos_.close()
-		
+
 		// I saw the following Exception raised:
 		// java.io.IOException: Pipe broken
 		//   at java.io.PipedInputStream.read(PipedInputStream.java:321)
 		//   at com.kazurayam.katalon.download.PipeReader.run(PipedStreamExample.groovy:78)
-		
+
 		// See
 		//   https://stackoverflow.com/questions/1866255/pipedinputstream-how-to-avoid-java-io-ioexception-pipe-broken
-		//   > Use a java.util.concurrent.CountDownLatch, and do not end the first thread 
+		//   > Use a java.util.concurrent.CountDownLatch, and do not end the first thread
 		//   > before the second one has signaled that is has finished reading from the pipe.
-		
-		
+
+
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -72,14 +75,55 @@ public class PipedStreamExample {
 	}
 }
 
+
 /**
  * 
  */
-class PipeReader extends Thread {
-	private PipedInputStream pis_
+class PipeWriter extends Thread {
 
-	public PipeReader(PipedInputStream pis) {
+	private PipedOutputStream pos_
+	private CountDownLatch latch_
+
+	public PipeWriter(PipedOutputStream pos, CountDownLatch latch) {
+		this.pos_ = pos
+		this.latch_ = latch
+	}
+
+	@Override
+	public void run() {
+		try {
+			for (int c = 0; c <= 5; ++c) {
+				pos_.write(c)
+				// pause the tread for 1 second
+				try {
+					Thread.sleep(1 * 1000)
+				} catch (InterruptedException e) {
+					e.printStackTrace()
+				}
+			}
+			// PipeWriter need to close the pipe in order to notify PipeReader of the end of the stream 
+			pos_.close()
+			latch_.await()
+			System.out.println("PipeWriter finished")
+		} catch (IOException e) {
+			e.printStackTrace()
+		} 
+	}
+
+}
+
+
+/**
+ *
+ */
+class PipeReader extends Thread {
+	
+	private PipedInputStream pis_
+	private CountDownLatch latch_
+	
+	public PipeReader(PipedInputStream pis, CountDownLatch latch) {
 		this.pis_ = pis
+		this.latch_ = latch
 	}
 
 	@Override
@@ -92,43 +136,16 @@ class PipeReader extends Thread {
 				}
 				System.out.println "0x${Integer.toHexString(i)}(${i})"
 			}
+			latch_.countDown()
 			System.out.println("PipeReader finished")
 		} catch (IOException e) {
 			e.printStackTrace()
 		} finally {
-
-		}
-	}
-}
-
-/**
- * 
- */
-class PipeWriter extends Thread {
-
-	private PipedOutputStream pos_
-
-	public PipeWriter(PipedOutputStream pos) {
-		this.pos_ = pos
-	}
-
-	@Override
-	public void run() {
-		try {
-			for (int c = 0; c <= 16; ++c) {
-				pos_.write(c)
-				// pause the tread for 1 second
-				try {
-					Thread.sleep(1 * 1000)
-				} catch (InterruptedException e) {
-					e.printStackTrace()
-				}
+			try {
+				pis_.close()
+			} catch (Exception e) {
+				e.printStackTrace()
 			}
-			System.out.println("PipeWriter finished")
-		} catch (IOException e) {
-			e.printStackTrace()
 		}
 	}
-
-
 }

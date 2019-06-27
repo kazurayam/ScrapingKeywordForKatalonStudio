@@ -17,5 +17,5 @@ public class PipedStreamExampleTest {
 		PipedStreamExample instance = new PipedStreamExample()
 		instance.execute()
 		// then:
-	}	
+	}
 }
