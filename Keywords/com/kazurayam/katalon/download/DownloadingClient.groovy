@@ -19,14 +19,32 @@ import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
 import com.kms.katalon.core.webservice.support.UrlEncoder
 
 /**
- * <p>A modification of com.kms.katalon.core.webservice.common.RestfulClient class.</p>
- * <p>https://github.com/katalon-studio/katalon-studio-testing-framework/blob/master/Include/scripts/groovy/com/kms/katalon/core/webservice/common/RestfulClient.java</p>
+ * <p></p>
+ * <p>DownloadingClient is a modification of com.kms.katalon.core.webservice.common.RestfulClient class.
+ *     The following methods are 100% identical to those of RestfulClient:
+ *     <ul>
+ *     <li>- sendRequest()</li>
+ *     <li>- isBodySupported()</li>
+ *     <li>- setRequestMethod()</li>
+ *     <li>- processRequestParams()</li>
+ *     </ul>
+ *     I did not wanted to but I had to copy the source code of those and paste, as those methods are
+ *     marked "private". If those were marked "protected", then I would have happily extended the
+ *     RestufulClient to create DownloadingClient.
+ *     </p>
  * 
- * <p>The send() method returns an instance of com.kazurayam.ks.download.DownloadableResponseObject 
- *     instead of com.kms.katalon.core.testobject.RequestObject. This is the sole difference from the RestfulClient.</p>
+ * <p>You can find the source code of RestfulClient here: 
+ *     https://github.com/katalon-studio/katalon-studio-testing-framework/blob/master/Include/scripts/groovy/com/kms/katalon/core/webservice/common/RestfulClient.java</p>
  * 
- * <p>DownloadableResponseObject offers the getInputStream() method.</p>
+ * <p>The send() method here returns an instance of 
+ *     com.kazurayam.ks.download.DownloadingClient.StreamingResponseObject 
+ *     instead of 
+ *     com.kms.katalon.core.testobject.RequestObject. 
+ *     This is the sole difference from the RestfulClient.</p>
  * 
+ * <p>StreamingResponseObject offers the getInputStream() method.</p>
+ * 
+ * @author kazurayam
  */
 public class DownloadingClient extends BasicRequestor {
 
@@ -242,4 +260,29 @@ public class DownloadingClient extends BasicRequestor {
 
 		return responseObject;
 	}
+
+	/**
+	 * 
+	 */
+	public class StreamingResponseObject extends ResponseObject {
+
+		private InputStream inputStream_ = null
+
+		StreamingResponseObject() {
+			super()
+		}
+
+		StreamingResponseObject(String responseText) {
+			super(responseText)
+		}
+
+		void setInputStream(InputStream is) {
+			this.inputStream_ = is
+		}
+
+		InputStream getInputStream() {
+			return this.inputStream_
+		}
+	}
+
 }

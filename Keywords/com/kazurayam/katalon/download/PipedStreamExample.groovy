@@ -33,9 +33,9 @@ public class PipedStreamExample {
 
 	PipedOutputStream pos_ = null
 	PipedInputStream pis_ = null
-	
+
 	private static CountDownLatch latch = new CountDownLatch(1);
-	
+
 	public void execute() throws IOException, InterruptedException {
 
 		pos_ = new PipedOutputStream()
@@ -101,13 +101,13 @@ class PipeWriter extends Thread {
 					e.printStackTrace()
 				}
 			}
-			// PipeWriter need to close the pipe in order to notify PipeReader of the end of the stream 
+			// PipeWriter need to close the pipe in order to notify PipeReader of the end of the stream
 			pos_.close()
 			latch_.await()
 			System.out.println("PipeWriter finished")
 		} catch (IOException e) {
 			e.printStackTrace()
-		} 
+		}
 	}
 
 }
@@ -117,10 +117,10 @@ class PipeWriter extends Thread {
  *
  */
 class PipeReader extends Thread {
-	
+
 	private PipedInputStream pis_
 	private CountDownLatch latch_
-	
+
 	public PipeReader(PipedInputStream pis, CountDownLatch latch) {
 		this.pis_ = pis
 		this.latch_ = latch

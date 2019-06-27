@@ -46,7 +46,7 @@ class DownloadingClientTest {
 		RequestObject request = new RequestObject()
 		request.setRestRequestMethod('GET')
 		request.setRestUrl(url)
-		StreamingResponseObject response = client.send(request)
+		DownloadingClient.StreamingResponseObject response = client.send(request)
 
 		response.getInputStream().with { is ->
 			try {
