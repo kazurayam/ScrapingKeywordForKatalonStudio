@@ -10,17 +10,19 @@ import java.nio.file.Paths
 
 import org.junit.BeforeClass
 import org.junit.Test
+import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-
+import com.kazurayam.junit4ks.IgnoreRestSupportRunner
+import com.kazurayam.junit4ks.IgnoreRest
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.network.ProxyInformation
 import com.kms.katalon.core.testobject.RequestObject
 
 import internal.GlobalVariable
 
-@RunWith(JUnit4.class)
-class DownloadingClientTest {
+@RunWith(IgnoreRestSupportRunner.class)
+class DownloaderClientTest {
 
 	private static Path testOutputDir_
 
@@ -42,11 +44,11 @@ class DownloadingClientTest {
 
 		// when:
 		ProxyInformation proxyInformation = RunConfiguration.getProxyInformation()
-		DownloadingClient client = new DownloadingClient('DownloadingClientTest', proxyInformation)
+		DownloaderClient client = new DownloaderClient('DownloaderClientTest', proxyInformation)
 		RequestObject request = new RequestObject()
 		request.setRestRequestMethod('GET')
 		request.setRestUrl(url)
-		DownloadingClient.StreamingResponseObject response = client.send(request)
+		DownloaderClient.StreamingResponseObject response = client.send(request)
 
 		response.getInputStream().with { is ->
 			try {

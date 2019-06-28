@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.download
+	package com.kazurayam.katalon.download
 
 import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
