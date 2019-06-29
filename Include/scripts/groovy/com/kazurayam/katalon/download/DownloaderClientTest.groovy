@@ -40,7 +40,7 @@ class DownloaderClientTest {
 
 	@Test
 	void test_downloadAndSave_csv_MS932() {
-		// whens:
+		// when:
 		String testCaseName = 'test_downloadAndSave'
 		// Japan Meteorological Agancy
 		Map data = (Map)GlobalVariable.JMA_RAIN_DATA_URL
@@ -52,14 +52,44 @@ class DownloaderClientTest {
 		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
 		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
 	}
+	
+	@Test
+	void test_downloadAndSave_excel() {
+		// when:
+		String testCaseName = 'test_downloadAndSave_excel'
+		// NISA excel
+		Map data = (Map)GlobalVariable.FSA_NISA_DATA_URL
+		String url = data.get('23')
+		String fileName = "23.xlsx"
+		Path outFile = doDownloadAndSave(testCaseName, url, fileName)
+		// then:
+		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
+		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
+	}
 
+	@Test
+	void test_downloadAndSave_pdf() {
+		// when:
+		String testCaseName = 'test_downloadAndSave_pdf'
+		// NISA excel
+		Map data = (Map)GlobalVariable.FSA_NISA_DATA_URL
+		String url = data.get('24')
+		String fileName = "24.pdf"
+		Path outFile = doDownloadAndSave(testCaseName, url, fileName)
+		// then:
+		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
+		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
+
+	}
+	
 	private Path doDownloadAndSave(String testCaseName, String url, String fileName) {
 		Path caseOutputDir = testOutputDir_.resolve(Paths.get(testCaseName))
 		Files.createDirectories(caseOutputDir)
 		Path outFile = caseOutputDir.resolve(fileName)
 		// when:
+		String projectDir = RunConfiguration.getProjectDir()
 		ProxyInformation proxyInformation = RunConfiguration.getProxyInformation()
-		DownloaderClient client = new DownloaderClient('DownloaderClientTest', proxyInformation)
+		DownloaderClient client = new DownloaderClient(projectDir, proxyInformation)
 		RequestObject request = new RequestObject()
 		request.setRestRequestMethod('GET')
 		request.setRestUrl(url)

@@ -64,6 +64,12 @@ public class DownloaderClient extends BasicRequestor {
 
 	DownloaderClient(String projectDir, ProxyInformation proxyInformation) {
 		super(projectDir, proxyInformation)
+		Objects.requireNonNull(projectDir, "projectDir must not be null")
+		Objects.requireNonNull(proxyInformation, "proxyInformation must not be null")
+		Path p = Paths.get(projectDir)
+		if (! Files.exists(p)) {
+			throw new IllegalArgumentException("projectDir ${p} does not exist")
+		}
 	}
 
 	@Override
@@ -74,7 +80,7 @@ public class DownloaderClient extends BasicRequestor {
 		" Use downloadAndSave(RequestObject, Path outFile) method instead.")
 	}
 
-	
+
 	private boolean isBodySupported(String requestMethod) {
 		return RestRequestMethodHelper.isBodySupported(requestMethod);
 	}
@@ -142,8 +148,7 @@ public class DownloaderClient extends BasicRequestor {
 	/**
 	 * 
 	 */
-	public long downloadAndSave(RequestObject request, Path outFile)
-			throws IOException, InterruptedException {
+	public long downloadAndSave(RequestObject request, Path outFile) throws IOException, InterruptedException {
 
 		HttpURLConnection connection = sendRequest(request)
 
@@ -218,7 +223,7 @@ public class DownloaderClient extends BasicRequestor {
 		private HttpURLConnection conn_
 		private CountDownLatch latch_
 		private static final int BUFFER_SIZE = 1024 * 100
-		
+
 		private boolean DEBUG_MODE = false
 
 		ResourceDownloadingPipeWriter(PipedOutputStream pos, CountDownLatch latch, HttpURLConnection conn) {
@@ -293,7 +298,7 @@ public class DownloaderClient extends BasicRequestor {
 		private static final int BUFFER_SIZE = 4096
 
 		private boolean DEBUG_MODE = false
-		
+
 		PipeReadingResourceSaver(PipedInputStream pis, CountDownLatch latch, Path outFile) {
 			this.pis_     = pis
 			this.outFile_ = outFile
