@@ -1,13 +1,16 @@
 package com.kazurayam.katalon.download
 
 import java.lang.reflect.Field
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.concurrent.CountDownLatch
 
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 
 import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.time.StopWatch
 
 import com.kms.katalon.constants.GlobalStringConstants
 import com.kms.katalon.core.network.ProxyInformation
@@ -19,7 +22,7 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
 import com.kms.katalon.core.webservice.support.UrlEncoder
-
+import org.apache.commons.io.FileUtils
 /**
  * <p></p>
  * <p>DownloadingClient is a modification of com.kms.katalon.core.webservice.common.RestfulClient class.
@@ -71,44 +74,7 @@ public class DownloaderClient extends BasicRequestor {
 		" Use downloadAndSave(RequestObject, Path outFile) method instead.")
 	}
 
-	/** 
-	 * @param request
-	 * @return
-	 * @throws Exception
-	 *
-	 private StreamingResponseObject sendRequest(RequestObject request) throws Exception {
-	 if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-	 SSLContext sc = SSLContext.getInstance(SSL);
-	 sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-	 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	 }
-	 // If there are some parameters, they should be append after the Service URL
-	 processRequestParams(request);
-	 URL url = new URL(request.getRestUrl());
-	 HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-	 if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-	 ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
-	 }
-	 String requestMethod = request.getRestRequestMethod();
-	 setRequestMethod(httpConnection, request.getRestRequestMethod());
-	 // Default if not set
-	 httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-	 setHttpConnectionHeaders(httpConnection, request);
-	 if (isBodySupported(requestMethod) && request.getBodyContent() != null) {
-	 httpConnection.setDoOutput(true);
-	 // Send post request
-	 OutputStream os = httpConnection.getOutputStream();
-	 request.getBodyContent().writeTo(os);
-	 os.flush();
-	 os.close();
-	 }
-	 // kazurayam hacked here.
-	 //return response(httpConnection)
-	 StreamingResponseObject bro = responseWithHack(httpConnection)
-	 return bro;
-	 }
-	 */
-
+	
 	private boolean isBodySupported(String requestMethod) {
 		return RestRequestMethodHelper.isBodySupported(requestMethod);
 	}
@@ -174,86 +140,10 @@ public class DownloaderClient extends BasicRequestor {
 	}
 
 	/**
-	 * this method downloads the whole bytes of the resource from URL, save it into a temp file as buffer,
-	 * returns a BufferedResponsePobject with an InputSteam for the buffering file.
-	 * @author kazurayam
-	 *
-	 private StreamingResponseObject responseWithHack(HttpURLConnection conn) throws Exception {
-	 if (conn == null) {
-	 return null
-	 }
-	 long startTime = System.currentTimeMillis()
-	 int statusCode = conn.getResponseCode()
-	 long waitingTime = System.currentTimeMillis() - startTime
-	 long contentDownloadTime = 0L
-	 byte[] buffer = new byte[1024]
-	 long bodyLength = 0L
-	 PipedOutputStream pipedOutput = new PipedOutputStream()
-	 // enable buffering
-	 int BUFFER_SIZE = 1024 * 1000;
-	 OutputStream out = new BufferedOutputStream(pipedOutput, BUFFER_SIZE)
-	 PipedInputStream pipedInput = new PipedInputStream()
-	 pipedInput.connect(pipedOutput)
-	 InputStream inputStream = null
-	 try {
-	 inputStream = ((statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream())
-	 if (inputStream != null) {
-	 startTime = System.currentTimeMillis()
-	 int len = 0
-	 while (true) {
-	 len = inputStream.read(buffer)
-	 if (len == -1) {
-	 break
-	 }
-	 contentDownloadTime += System.currentTimeMillis() - startTime
-	 out.write(buffer, 0, len)
-	 bodyLength += len
-	 startTime = System.currentTimeMillis()
-	 }
-	 } else {
-	 throw new IOException("HttpURLConnection returned null as inputstream")
-	 }
-	 } catch (IOException e) {
-	 e.printStackTrace()
-	 } finally {
-	 if (inputStream != null) {
-	 try {
-	 inputStream.close()
-	 } catch (IOException e) {
-	 e.printStackTrace()
-	 }
-	 }
-	 if (out != null) {
-	 try {
-	 out.close()
-	 } catch (IOException e) {
-	 e.printStackTrace()
-	 }
-	 }
-	 }
-	 StreamingResponseObject responseObject = new StreamingResponseObject()
-	 responseObject.setInputStream(pipedInput)
-	 //
-	 responseObject.setContentType(conn.getContentType());
-	 responseObject.setHeaderFields(conn.getHeaderFields());
-	 responseObject.setStatusCode(statusCode);
-	 responseObject.setResponseBodySize(bodyLength);
-	 long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn)
-	 responseObject.setResponseHeaderSize(headerLength);
-	 responseObject.setWaitingTime(waitingTime);
-	 responseObject.setContentDownloadTime(contentDownloadTime);
-	 conn.disconnect();
-	 return responseObject;
-	 }
-	 */
-
-	//-------------------------------------------------------------------
-
-	/**
 	 * 
 	 */
-	public void downloadAndSave(RequestObject request, Path outFile)
-	throws IOException, InterruptedException {
+	public long downloadAndSave(RequestObject request, Path outFile)
+			throws IOException, InterruptedException {
 
 		HttpURLConnection connection = sendRequest(request)
 
@@ -275,6 +165,8 @@ public class DownloaderClient extends BasicRequestor {
 
 		pis.close()
 		pos.close()
+
+		return Files.size(outFile)
 	}
 
 	/**
@@ -325,36 +217,69 @@ public class DownloaderClient extends BasicRequestor {
 		private PipedOutputStream pos_
 		private HttpURLConnection conn_
 		private CountDownLatch latch_
-		private static final int BUFFER_SIZE = 4096
+		private static final int BUFFER_SIZE = 1024 * 100
+		
+		private boolean DEBUG_MODE = false
 
 		ResourceDownloadingPipeWriter(PipedOutputStream pos, CountDownLatch latch, HttpURLConnection conn) {
+			Objects.requireNonNull(pos, "pos must not be null")
+			Objects.requireNonNull(latch, "latch must not be null")
+			Objects.requireNonNull(conn, "conn must not be null")
 			this.pos_ = pos
 			this.conn_ = conn
 			this.latch_ = latch
 		}
 
-
 		@Override
 		public void run() {
+			int statusCode = conn_.getResponseCode()
+			byte[] buffer = new byte[BUFFER_SIZE]
+			InputStream input = null
 			try {
-
-				// TODO TODO TODO
-
-				byte[] buffer = new byte[BUFFER_SIZE]
-				int len = 0
-				for (a;b;c) {
-					pos_.write(buffer, 0, len)
+				StopWatch stopWatch = new StopWatch()
+				stopWatch.start()
+				input = ((statusCode >= 400)) ? conn_.getErrorStream() : conn_.getInputStream()
+				if (input != null) {
+					int len = 0
+					while (true) {
+						len = input.read(buffer)
+						if (len == -1) {
+							break
+						}
+						pos_.write(buffer, 0, len)
+					}
 				}
 				// PipeWriter needs to close the pipe in order to notify PipeReader of the end of the stream
-				pos_.close()
+				try {
+					pos_.close()
+				} catch (IOException e) {
+					e.printStackTrace()
+				}
+				//
+				stopWatch.stop()
+				int contentLength = conn_.getContentLength()
+				if (DEBUG_MODE) {
+					System.out.println("ResourceDownloaderPipeWriter took ${stopWatch.getTime()} milliseconds for downloading ${contentLength} bytes")
+				}
+				// wait for the PipeReader to finish consuming the piped stream, then finish
 				latch_.await()
-				System.out.println("ResourceDownloadingPipeWriter finished processing ${request_.getRestUrl()}")
+				if (DEBUG_MODE) {
+					System.out.println("ResourceDownloaderPipeWriter finished processing")
+				}
 			} catch (IOException e) {
 				e.printStackTrace()
+			} finally {
+				if (input != null) {
+					try {
+						input.close()
+					} catch (IOException e) {
+						e.printStackTrace()
+					}
+
+				}
 			}
 		}
 	}
-
 
 
 	/**
@@ -367,6 +292,8 @@ public class DownloaderClient extends BasicRequestor {
 		private CountDownLatch latch_
 		private static final int BUFFER_SIZE = 4096
 
+		private boolean DEBUG_MODE = false
+		
 		PipeReadingResourceSaver(PipedInputStream pis, CountDownLatch latch, Path outFile) {
 			this.pis_     = pis
 			this.outFile_ = outFile
@@ -389,7 +316,9 @@ public class DownloaderClient extends BasicRequestor {
 					resourceSize += len
 				}
 				latch_.countDown()
-				System.out.println("PipeReadingResourceSaver finished saving the resource(${resourceSize} bytes) into ${outFile_}")
+				if (DEBUG_MODE) {
+					System.out.println("PipeReadingResourceSaver finished saving the resource(${resourceSize} bytes) into ${outFile_}")
+				}
 			} catch (IOException e) {
 				e.printStackTrace()
 			} finally {
@@ -408,26 +337,49 @@ public class DownloaderClient extends BasicRequestor {
 		}
 	}
 
-
-
 	/**
+	 * Convert a text file in a given Charset to UTF-8.
 	 * 
-	 *
-	 class StreamingResponseObject extends ResponseObject {
-	 private InputStream inputStream_ = null
-	 StreamingResponseObject() {
-	 super()
-	 }
-	 StreamingResponseObject(String responseText) {
-	 super(responseText)
-	 }
-	 void setInputStream(InputStream is) {
-	 this.inputStream_ = is
-	 }
-	 InputStream getInputStream() {
-	 return this.inputStream_
-	 }
-	 }
+	 * While converting, the End-of-line to the one of the runtime environment.
+	 * 
+	 * This method overwrites the target text file.
+	 * 
+	 * @param textPath
+	 * @param charset, optional, default to 'MS932'
 	 */
+	public static void convertCharsetToUtf8(Path textPath, String charset = 'MS932') {
+		Objects.requireNonNull(textPath, "textFile must not be null")
+		if (!Files.exists(textPath)) {
+			throw new IllegalArgumentException("${textPath} does not exist")
+		}
+		File tmp = null
+		try {
+			tmp = Files.createTempFile(Paths.get('.'), 'converCharsetToUTF8', '.tmp').toFile()
+
+			// read the text file as MS932, convert every line to utf-8 and write into the tmp file
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(
+					new FileInputStream(textPath.toFile()),
+					'MS932'))
+			PrintWriter bw = new PrintWriter(
+					new BufferedWriter(
+					new OutputStreamWriter(
+					new FileOutputStream(tmp),
+					'utf-8')))
+			String line
+			while ((line = br.readLine()) != null) {
+				bw.println(line)
+			}
+			bw.flush()
+			bw.close()
+			br.close()
+			//
+			FileUtils.copyFile(tmp, textPath.toFile())
+		} finally {
+			if (tmp != null && tmp.exists()) {
+				tmp.delete()
+			}
+		}
+	}
 
 }

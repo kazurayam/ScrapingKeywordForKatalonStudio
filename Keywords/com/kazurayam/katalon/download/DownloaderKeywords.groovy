@@ -1,6 +1,8 @@
 package com.kazurayam.katalon.download
+
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
@@ -16,11 +18,12 @@ import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords
 import com.kms.katalon.core.testobject.RequestObject
+import org.apache.commons.io.FileUtils
 
 class DownloaderKeywords {
 
 	@Keyword
-	public static void downloadAndSave(String absoluteHref, Path outDir, String fileName,
+	public static long downloadAndSave(String absoluteHref, Path outDir, String fileName,
 			FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling()) throws IOException {
 		Objects.requireNonNull(absoluteHref, "absoluteHref must not be null")
 		Objects.requireNonNull(outDir, "outDir must not be null")
@@ -39,12 +42,11 @@ class DownloaderKeywords {
 		ro.setRestUrl(absoluteHref)
 		Path outFile = outDir.resolve(fileName)
 		// Now let's do the real business
-		client.downloadAndSave(ro, outFile)
-		
+		return client.downloadAndSave(ro, outFile)
 	}
 
 	@Keyword
-	public static void downloadAndSave(String absoluteHref, Path outDir,
+	public static long downloadAndSave(String absoluteHref, Path outDir,
 			FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling())
 	throws IOException {
 		Objects.requireNonNull(absoluteHref, "absoluteHref must not be null")
@@ -54,21 +56,21 @@ class DownloaderKeywords {
 			throw new IllegalArgumentException("absoluteHref=${}")
 		}
 		Path outFile = outDir.resolve(fileName)
-		downloadAndSave(absoluteHref, outDir, fileName, flowControl)
+		return downloadAndSave(absoluteHref, outDir, fileName, flowControl)
 	}
 
 	@Keyword
-	public static void downloadAndSave(String relativeHref, String baseUrl, Path outDir)
+	public static long downloadAndSave(String relativeHref, String baseUrl, Path outDir)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
-		downloadAndSave(absoluteHref, outDir)
+		return downloadAndSave(absoluteHref, outDir)
 	}
 
 	@Keyword
-	public static void downloadAndSave(String relativeHref, String baseUrl, Path outDir, String fileName)
+	public static long downloadAndSave(String relativeHref, String baseUrl, Path outDir, String fileName)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
-		downloadAndSave(absoluteHref, outDir, fileName)
+		return downloadAndSave(absoluteHref, outDir, fileName)
 	}
 
 	static String getFileName(String url) {
@@ -88,51 +90,19 @@ class DownloaderKeywords {
 		} else {
 			String s = base
 			if (!s.endsWith('/')) {
-				s = s.substring(0, s.lenth())
+				s = s.substring(0, s.length())
 			}
 			return s + href
 		}
 	}
 
 	/**
-	 * Refresh browser
+	 * Convert a text file in Charset MS932 to UTF-8 
+	 * while converting the End-of-line to the one of the runtime environment.
+	 * This method overwrites the target text file.  
 	 */
 	@Keyword
-	def refreshBrowser() {
-		KeywordUtil.logInfo("Refreshing")
-		WebDriver webDriver = DriverFactory.getWebDriver()
-		webDriver.navigate().refresh()
-		KeywordUtil.markPassed("Refresh successfully")
-	}
-
-	/**
-	 * Click element
-	 * @param to Katalon test object
-	 */
-	@Keyword
-	def clickElement(TestObject to) {
-		try {
-			WebElement element = WebUiBuiltInKeywords.findWebElement(to);
-			KeywordUtil.logInfo("Clicking element")
-			element.click()
-			KeywordUtil.markPassed("Element has been clicked")
-		} catch (WebElementNotFoundException e) {
-			KeywordUtil.markFailed("Element not found")
-		} catch (Exception e) {
-			KeywordUtil.markFailed("Fail to click on element")
-		}
-	}
-
-	/**
-	 * Get all rows of HTML table
-	 * @param table Katalon test object represent for HTML table
-	 * @param outerTagName outer tag name of TR tag, usually is TBODY
-	 * @return All rows inside HTML table
-	 */
-	@Keyword
-	def List<WebElement> getHtmlTableRows(TestObject table, String outerTagName) {
-		WebElement mailList = WebUiBuiltInKeywords.findWebElement(table)
-		List<WebElement> selectedRows = mailList.findElements(By.xpath("./" + outerTagName + "/tr"))
-		return selectedRows
+	void convertCharsetToUtf8(Path textFile) {
+		DownloadClient.convertCharsetToUtf8(textFile)
 	}
 }

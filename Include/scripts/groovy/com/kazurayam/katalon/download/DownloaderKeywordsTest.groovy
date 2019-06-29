@@ -49,5 +49,4 @@ class DownloaderKeywordsTest {
 		// then:
 		assertEquals(expected, actual)
 	}
-
 }
