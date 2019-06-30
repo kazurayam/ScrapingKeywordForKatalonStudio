@@ -34,7 +34,7 @@ class ScrapingClientTest {
 		if (Files.exists(testOutputDir_)) {
 			FileUtils.deleteDirectory(testOutputDir_.toFile())
 		}
-		Files.createDirectory(testOutputDir_)
+		Files.createDirectories(testOutputDir_)
 		fixtureDir_ = projectDir.resolve(Paths.get('Include/resources/fixture'))
 	}
 
