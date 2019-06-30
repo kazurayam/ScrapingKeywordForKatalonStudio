@@ -24,4 +24,9 @@
       <initValue>[('23') : 'https://www.fsa.go.jp/policy/nisa/20170614-2/23.xlsx', ('24') : 'https://www.fsa.go.jp/policy/nisa/20170614-2/24.pdf']</initValue>
       <name>FSA_NISA_DATA_URL</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>[('HEADER_JPG') : 'https://katalon-demo-cura.herokuapp.com/img/header.jpg']</initValue>
+      <name>KATALON_DEMO_DATA_URL</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

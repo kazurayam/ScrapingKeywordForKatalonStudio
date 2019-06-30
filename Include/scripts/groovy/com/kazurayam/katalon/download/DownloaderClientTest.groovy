@@ -41,7 +41,7 @@ class DownloaderClientTest {
 	@Test
 	void test_downloadAndSave_csv_MS932() {
 		// when:
-		String testCaseName = 'test_downloadAndSave'
+		String testCaseName = 'test_downloadAndSave_csv_MS932'
 		// Japan Meteorological Agancy
 		Map data = (Map)GlobalVariable.JMA_RAIN_DATA_URL
 		String url = data.get('1h')   // 1hour volume of rain
@@ -52,7 +52,7 @@ class DownloaderClientTest {
 		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
 		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
 	}
-	
+
 	@Test
 	void test_downloadAndSave_excel() {
 		// when:
@@ -79,7 +79,20 @@ class DownloaderClientTest {
 		// then:
 		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
 		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
+	}
 
+	@Test
+	void test_downloadAndSave_image() {
+		// when:
+		String testCaseName = 'test_downloadAndSave_image'
+		// NISA excel
+		Map data = (Map)GlobalVariable.KATALON_DEMO_DATA_URL
+		String url = data.get('HEADER_JPG')
+		String fileName = "header.jpg"
+		Path outFile = doDownloadAndSave(testCaseName, url, fileName)
+		// then:
+		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
+		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
 	}
 	
 	private Path doDownloadAndSave(String testCaseName, String url, String fileName) {
