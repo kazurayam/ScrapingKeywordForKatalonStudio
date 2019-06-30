@@ -1,4 +1,4 @@
-	package com.kazurayam.katalon.download
+package com.kazurayam.katalon.webui.keyword
 
 import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
@@ -65,8 +65,6 @@ public class PipedStreamExample {
 		//   https://stackoverflow.com/questions/1866255/pipedinputstream-how-to-avoid-java-io-ioexception-pipe-broken
 		//   > Use a java.util.concurrent.CountDownLatch, and do not end the first thread
 		//   > before the second one has signaled that is has finished reading from the pipe.
-
-
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -101,7 +99,8 @@ class PipeWriter extends Thread {
 					e.printStackTrace()
 				}
 			}
-			// PipeWriter need to close the pipe in order to notify PipeReader of the end of the stream
+			// PipeWriter need to close the pipe explicitly
+			// in order to notify PipeReader of the end of the stream
 			pos_.close()
 			latch_.await()
 			System.out.println("PipeWriter finished")

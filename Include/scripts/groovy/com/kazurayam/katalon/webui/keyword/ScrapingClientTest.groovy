@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.download
+package com.kazurayam.katalon.webui.keyword
 
 import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.MatcherAssert.*
@@ -23,14 +23,14 @@ import internal.GlobalVariable
 import org.apache.commons.io.FileUtils
 
 @RunWith(IgnoreRestSupportRunner.class)
-class DownloaderClientTest {
+class ScrapingClientTest {
 
 	private static Path testOutputDir_
 	private static Path fixtureDir_
 
 	@BeforeClass public static void onlyOnce() {
 		Path projectDir = Paths.get(RunConfiguration.getProjectDir())
-		testOutputDir_ = projectDir.resolve(Paths.get('build/tmp/testOutput/DownloaderClientTest'))
+		testOutputDir_ = projectDir.resolve(Paths.get("build/tmp/testOutput/${ScrapingClientTest.class.getSimpleName()}"))
 		if (Files.exists(testOutputDir_)) {
 			FileUtils.deleteDirectory(testOutputDir_.toFile())
 		}
@@ -47,7 +47,7 @@ class DownloaderClientTest {
 		String url = data.get('1h')   // 1hour volume of rain
 		String fileName = '1h.csv'
 		Path outFile = doDownloadAndSave(testCaseName, url, fileName)
-		DownloaderClient.convertCharsetToUtf8(outFile)
+		ScrapingClient.convertCharsetToUtf8(outFile)
 		// then:
 		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
 		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
@@ -94,7 +94,7 @@ class DownloaderClientTest {
 		assertThat(outFile.toString() + " should exist", Files.exists(outFile), is(equalTo(true)))
 		assertTrue(outFile.toString() + " should not be empty", Files.size(outFile) > 0)
 	}
-	
+
 	private Path doDownloadAndSave(String testCaseName, String url, String fileName) {
 		Path caseOutputDir = testOutputDir_.resolve(Paths.get(testCaseName))
 		Files.createDirectories(caseOutputDir)
@@ -102,7 +102,7 @@ class DownloaderClientTest {
 		// when:
 		String projectDir = RunConfiguration.getProjectDir()
 		ProxyInformation proxyInformation = RunConfiguration.getProxyInformation()
-		DownloaderClient client = new DownloaderClient(projectDir, proxyInformation)
+		ScrapingClient client = new ScrapingClient(projectDir, proxyInformation)
 		RequestObject request = new RequestObject()
 		request.setRestRequestMethod('GET')
 		request.setRestUrl(url)
@@ -119,7 +119,7 @@ class DownloaderClientTest {
 		Path dataFile = caseOutputDir.resolve('1h.csv')
 		FileUtils.copyFile(fixtureFile.toFile(), dataFile.toFile())
 		// when:
-		DownloaderClient.convertCharsetToUtf8(dataFile)
+		ScrapingClient.convertCharsetToUtf8(dataFile)
 		// then:
 		String content = dataFile.toFile().getText('utf-8')
 		//

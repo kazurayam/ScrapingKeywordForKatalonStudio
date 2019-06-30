@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.download
+package com.kazurayam.katalon.webui.keyword
 
 import java.lang.reflect.Field
 import java.nio.file.Files
@@ -51,7 +51,7 @@ import org.apache.commons.io.FileUtils
  * 
  * @author kazurayam
  */
-public class DownloaderClient extends BasicRequestor {
+public class ScrapingClient extends BasicRequestor {
 
 	private static final String SSL = RequestHeaderConstants.SSL
 
@@ -62,7 +62,7 @@ public class DownloaderClient extends BasicRequestor {
 	private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT
 
 
-	DownloaderClient(String projectDir, ProxyInformation proxyInformation) {
+	ScrapingClient(String projectDir, ProxyInformation proxyInformation) {
 		super(projectDir, proxyInformation)
 		Objects.requireNonNull(projectDir, "projectDir must not be null")
 		Objects.requireNonNull(proxyInformation, "proxyInformation must not be null")
@@ -354,18 +354,19 @@ public class DownloaderClient extends BasicRequestor {
 	 */
 	public static void convertCharsetToUtf8(Path textPath, String charset = 'MS932') {
 		Objects.requireNonNull(textPath, "textFile must not be null")
+		Objects.requireNonNull(charset, "charset must not be null")
 		if (!Files.exists(textPath)) {
 			throw new IllegalArgumentException("${textPath} does not exist")
 		}
 		File tmp = null
 		try {
-			tmp = Files.createTempFile(Paths.get('.'), 'converCharsetToUTF8', '.tmp').toFile()
+			tmp = Files.createTempFile(Paths.get('.'), 'converCharsetToUtf8', '.tmp').toFile()
 
 			// read the text file as MS932, convert every line to utf-8 and write into the tmp file
 			BufferedReader br = new BufferedReader(
 					new InputStreamReader(
 					new FileInputStream(textPath.toFile()),
-					'MS932'))
+					charset))
 			PrintWriter bw = new PrintWriter(
 					new BufferedWriter(
 					new OutputStreamWriter(

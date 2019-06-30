@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>DownloaderKeywordsTestRunner</name>
+   <name>AllTestsRunner</name>
    <tag></tag>
    <comment></comment>
-   <testCaseGuid>19f3bfb1-fdaf-4036-b3b6-7bd591472783</testCaseGuid>
+   <testCaseGuid>6d0b2202-0a05-4d43-8423-a3fad45a541d</testCaseGuid>
 </TestCaseEntity>

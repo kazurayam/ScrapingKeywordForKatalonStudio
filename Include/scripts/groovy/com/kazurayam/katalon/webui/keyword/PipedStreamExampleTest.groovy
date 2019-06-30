@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.download
+package com.kazurayam.katalon.webui.keyword
 
 import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.MatcherAssert.*

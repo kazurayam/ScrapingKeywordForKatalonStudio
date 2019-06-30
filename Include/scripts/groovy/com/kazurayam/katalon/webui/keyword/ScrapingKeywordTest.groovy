@@ -1,5 +1,4 @@
-package com.kazurayam.katalon.download
-
+package com.kazurayam.katalon.webui.keyword
 
 import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.MatcherAssert.*
@@ -23,7 +22,7 @@ import com.kms.katalon.core.testobject.RequestObject
 import internal.GlobalVariable
 
 @RunWith(IgnoreRestSupportRunner.class)
-class DownloaderKeywordsTest {
+class ScrapingKeywordTest {
 
 	@BeforeClass public static void onlyOnce() {
 		Path projectDir = Paths.get(RunConfiguration.getProjectDir())
@@ -35,7 +34,7 @@ class DownloaderKeywordsTest {
 		String base = 'https://s2.q4cdn.com/'
 		String href = '470004039/files/doc_financials/2019/q2/10-Q-Q2-2019-(As-Filed).pdf'
 		String expected = 'https://s2.q4cdn.com/470004039/files/doc_financials/2019/q2/10-Q-Q2-2019-(As-Filed).pdf'
-		String actual = DownloaderKeywords.resolve(href, base)
+		String actual = ScrapingKeyword.resolve(href, base)
 		// then:
 		assertEquals(expected, actual)
 	}
@@ -45,7 +44,7 @@ class DownloaderKeywordsTest {
 		// when:
 		String url = 'https://s2.q4cdn.com/470004039/files/doc_financials/2019/q2/10-Q-Q2-2019-(As-Filed).pdf'
 		String expected = '10-Q-Q2-2019-(As-Filed).pdf'
-		String actual = DownloaderKeywords.getFileName(url)
+		String actual = ScrapingKeyword.getFileName(url)
 		// then:
 		assertEquals(expected, actual)
 	}

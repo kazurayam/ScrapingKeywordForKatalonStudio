@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.download
+package com.kazurayam.katalon.webui.keyword
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -20,11 +20,12 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords
 import com.kms.katalon.core.testobject.RequestObject
 import org.apache.commons.io.FileUtils
 
-class DownloaderKeywords {
+class ScrapingKeyword {
 
 	@Keyword
-	public static Map<String, List<String>> downloadAndSave(String absoluteHref, Path outDir, String fileName,
-			FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling()) throws IOException {
+	public static Map<String, List<String>> downloadAndSave(String absoluteHref, Path outDir,
+			String fileName, FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling())
+	throws IOException {
 		Objects.requireNonNull(absoluteHref, "absoluteHref must not be null")
 		Objects.requireNonNull(outDir, "outDir must not be null")
 		Objects.requireNonNull(fileName, "fileName must not be null")
@@ -36,7 +37,7 @@ class DownloaderKeywords {
 		}
 		String projectDir = RunConfiguration.getProjectDir()
 		ProxyInformation  proxyInformation = RunConfiguration.getProxyInformation()
-		DownloaderClient client = new DownloaderClient(projectDir, proxyInformation)
+		ScrapingClient client = new ScrapingClient(projectDir, proxyInformation)
 		RequestObject ro = new RequestObject()
 		ro.setRestRequestMethod('GET')
 		ro.setRestUrl(absoluteHref)
@@ -53,34 +54,54 @@ class DownloaderKeywords {
 		Objects.requireNonNull(outDir, "outDir must not be null")
 		String fileName = getFileName(absoluteHref)
 		if (fileName.equals('')) {
-			throw new IllegalArgumentException("absoluteHref=${}")
+			throw new IllegalArgumentException("absoluteHref=${absoluteHref} does not have file name")
 		}
 		Path outFile = outDir.resolve(fileName)
 		return downloadAndSave(absoluteHref, outDir, fileName, flowControl)
 	}
 
 	@Keyword
-	public static Map<String, List<String>> downloadAndSave(String relativeHref, String baseUrl, Path outDir)
+	public static Map<String, List<String>> downloadAndSave(
+			String relativeHref, String baseUrl, Path outDir)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
 		return downloadAndSave(absoluteHref, outDir)
 	}
 
 	@Keyword
-	public static Map<String, List<String>> downloadAndSave(String relativeHref, String baseUrl, Path outDir, String fileName)
+	public static Map<String, List<String>> downloadAndSave(
+			String relativeHref, String baseUrl, Path outDir, String fileName)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
 		return downloadAndSave(absoluteHref, outDir, fileName)
 	}
 
+	/**
+	 * Scan a string of a URL to look up the file name.
+	 * url is primarilly supposed to be an absolute URL with 'http' or 'https' scheme.
+	 * url is also can be a relative URL.
+	 * If url is 'https://foo.bar/baz/pee.pdf' then returns 'pee.pdf', which is the last path component
+	 * If url is 'https://foo.bar/baz/' then returns ''.
+	 * If url is 'baz/pee.pdf' then returns 'pee.pdf'
+	 * If url is 'pee.pdf' then returns 'pee.pdf'
+	 * If url is 'https://foo.bar/baz/pee.pdf?' then returns 'pee.pdf', chomping off '?' and characters after that 
+	 * 
+	 * @param url
+	 * @return
+	 */
+	@Keyword
 	static String getFileName(String url) {
-		if (url.lastIndexOf('/') > 0) {
-			return url.substring(url.lastIndexOf('/') + 1)
+		Objects.requireNonNull(url, "url must not be null")
+
+		int x = url.lastIndexOf('/')
+		if (x > 0) {
+			return url.substring(x + 1)
 		} else {
 			return ''
 		}
 	}
 
+	@Keyword
 	static String resolve(String href, String base) {
 		if (href.startsWith('http:') ||
 		href.startsWith('https:') ||
@@ -102,7 +123,7 @@ class DownloaderKeywords {
 	 * This method overwrites the target text file.  
 	 */
 	@Keyword
-	void convertCharsetToUtf8(Path textFile) {
-		DownloaderClient.convertCharsetToUtf8(textFile)
+	void convertCharsetToUtf8(Path textFile, String charset = 'MS932') {
+		ScrapingClient.convertCharsetToUtf8(textFile, charset)
 	}
 }
