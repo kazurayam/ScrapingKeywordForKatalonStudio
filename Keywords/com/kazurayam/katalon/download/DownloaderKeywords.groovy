@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils
 class DownloaderKeywords {
 
 	@Keyword
-	public static long downloadAndSave(String absoluteHref, Path outDir, String fileName,
+	public static Map<String, List<String>> downloadAndSave(String absoluteHref, Path outDir, String fileName,
 			FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling()) throws IOException {
 		Objects.requireNonNull(absoluteHref, "absoluteHref must not be null")
 		Objects.requireNonNull(outDir, "outDir must not be null")
@@ -46,7 +46,7 @@ class DownloaderKeywords {
 	}
 
 	@Keyword
-	public static long downloadAndSave(String absoluteHref, Path outDir,
+	public static Map<String, List<String>> downloadAndSave(String absoluteHref, Path outDir,
 			FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling())
 	throws IOException {
 		Objects.requireNonNull(absoluteHref, "absoluteHref must not be null")
@@ -60,14 +60,14 @@ class DownloaderKeywords {
 	}
 
 	@Keyword
-	public static long downloadAndSave(String relativeHref, String baseUrl, Path outDir)
+	public static Map<String, List<String>> downloadAndSave(String relativeHref, String baseUrl, Path outDir)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
 		return downloadAndSave(absoluteHref, outDir)
 	}
 
 	@Keyword
-	public static long downloadAndSave(String relativeHref, String baseUrl, Path outDir, String fileName)
+	public static Map<String, List<String>> downloadAndSave(String relativeHref, String baseUrl, Path outDir, String fileName)
 	throws IOException {
 		String absoluteHref = resolve(relativeHref, baseUrl)
 		return downloadAndSave(absoluteHref, outDir, fileName)
@@ -103,6 +103,6 @@ class DownloaderKeywords {
 	 */
 	@Keyword
 	void convertCharsetToUtf8(Path textFile) {
-		DownloadClient.convertCharsetToUtf8(textFile)
+		DownloaderClient.convertCharsetToUtf8(textFile)
 	}
 }

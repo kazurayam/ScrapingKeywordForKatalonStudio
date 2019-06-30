@@ -148,7 +148,7 @@ public class DownloaderClient extends BasicRequestor {
 	/**
 	 * 
 	 */
-	public long downloadAndSave(RequestObject request, Path outFile) throws IOException, InterruptedException {
+	public Map<String, List<String>> downloadAndSave(RequestObject request, Path outFile) throws IOException, InterruptedException {
 
 		HttpURLConnection connection = sendRequest(request)
 
@@ -171,7 +171,7 @@ public class DownloaderClient extends BasicRequestor {
 		pis.close()
 		pos.close()
 
-		return Files.size(outFile)
+		return connection.getHeaderFields()
 	}
 
 	/**
