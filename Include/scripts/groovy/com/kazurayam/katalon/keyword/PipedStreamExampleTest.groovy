@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.webui.keyword
+package com.kazurayam.katalon.keyword
 
 import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.MatcherAssert.*
@@ -11,11 +11,11 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4.class)
 public class PipedStreamExampleTest {
 
-	@Test
-	void test_execute() {
-		// when:
-		PipedStreamExample instance = new PipedStreamExample()
-		instance.execute()
-		// then:
-	}
+    @Test
+    void test_execute() {
+        // when:
+        PipedStreamExample instance = new PipedStreamExample()
+        instance.execute()
+        // then:
+    }
 }
