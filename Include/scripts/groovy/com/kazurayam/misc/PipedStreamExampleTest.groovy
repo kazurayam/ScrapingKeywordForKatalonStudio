@@ -1,4 +1,4 @@
-package com.kazurayam.katalon.keyword
+package com.kazurayam.misc
 
 import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.MatcherAssert.*
