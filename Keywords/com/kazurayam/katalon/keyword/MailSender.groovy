@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 
 import com.kms.katalon.core.annotation.Keyword
 
-public class MailKeyword {
+public class MailSender {
 
     private String senderAddress;
     private String senderPassword;
@@ -30,7 +30,7 @@ public class MailKeyword {
             if (host.length() == 0) {
                 throw new IllegalArgumentException("host must not be an empty string");
             }
-            
+
             if (port.length() == 0) {
                 throw new IllegalArgumentException("port must not be an empty string")
             }
@@ -53,8 +53,8 @@ public class MailKeyword {
             this.senderPassword = senderPassword;
             return this;
         }
-        public MailKeyword build() {
-            return new MailKeyword(this);
+        public MailSender build() {
+            return new MailSender(this);
         }
     }
 
@@ -63,7 +63,7 @@ public class MailKeyword {
      * 
      * @param builder
      */
-    private MailKeyword(Builder builder) {
+    private MailSender(Builder builder) {
         this.senderAddress = builder.senderAddress;
         this.senderPassword = builder.senderPassword;
         this.host = builder.host;

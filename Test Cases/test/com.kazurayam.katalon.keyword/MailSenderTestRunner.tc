@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>MailKeywordTestRunner</name>
+   <name>MailSenderTestRunner</name>
    <tag></tag>
    <comment></comment>
    <testCaseGuid>f30e49d3-dcf3-45f8-9f8e-fa5dd53d008c</testCaseGuid>
