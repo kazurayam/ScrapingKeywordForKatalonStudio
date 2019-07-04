@@ -4,6 +4,7 @@ import javax.mail.Authenticator
 import javax.mail.Message
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication
+import javax.mail.SendFailedException
 import javax.mail.Session
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -13,8 +14,13 @@ import com.kms.katalon.core.annotation.Keyword
 
 public class MailKeyword {
 
+    /**
+     * 
+     * @param htmlMessage
+     * @return true if sent message successfully.
+     */
     @Keyword
-    public static void sendMail(String htmlMessage) {
+    public static boolean sendMail(String htmlMessage) {
         final String username = "kazuaki.matsuhashi@quick.jp";
         final String password = "Wakako1Akihiro2Hanae4";
 
@@ -44,8 +50,13 @@ public class MailKeyword {
             Transport.send(message);
 
             System.out.println("Sent.");
+        } catch (SendFailedException e) {
+            e.printStackTrace();
+            return false;
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
+        return true
     }
 }

@@ -29,8 +29,8 @@ public class MailKeywordTest {
         // setup:
         MailKeyword keyword = new MailKeyword()
         // when:
-        keyword.sendMail("Hello, world")
+        boolean success = keyword.sendMail("Hello, world")
         // then:
-        assertThat(true, is(false))
+        assertThat(success, is(true))
     }
 }
