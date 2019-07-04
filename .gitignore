@@ -17,3 +17,6 @@ settings/
 bin/
 Libs/
 Reports/
+
+# custom files
+katalon.properties
