@@ -1,8 +1,10 @@
 plugins {
   id 'groovy'
+  id 'com.github.johnrengelman.shadow' version '5.0.0'
   id "com.katalon.gradle-plugin" version "0.0.7"
 }
 
+version = '0.1.0'
 
 repositories {
   jcenter()
@@ -18,8 +20,33 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.subethamail/subethasmtp
     testCompile group: 'org.subethamail', name: 'subethasmtp', version: '3.1.7'
+}
 
+
+// Execute
+//     $ gradle katalonCopyDependencies
+// to stuff the ./Drivers with external jar files on which Espionage keyword depends
+
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = [ 'Keywords', 'Include/scripts/groovy' ]
+            srcDir 'Libs'
+        }
+    }
+}
+
+shadowJar {
+    exclude 'Temp*.class'
+    classifier = null
+}
+
+katalon {
+    dependencyPrefix = 'com.katalon'
+    minimize = false
 }
 
 // Execute
-// $ gradle katalonCopyDependencies
+//     $ gradle katalonPluginPackage
+// to generate ./build/libs/espionagekeyword-0.1.0.jar file which contains the artifacts of this project
