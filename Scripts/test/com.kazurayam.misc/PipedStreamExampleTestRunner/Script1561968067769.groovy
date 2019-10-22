@@ -1,6 +1,3 @@
-import com.kazurayam.misc.PipedStreamExampleTest
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kazurayam.junit4ks.JUnitCustomKeywords as JUnit
 
-CustomKeywords.'com.kazurayam.junit4ks.JUnitCustomKeywords.runWithJUnitRunner'(PipedStreamExampleTest.class)
-
-WebUI.comment("done")
+JUnit.runWithJUnitRunner(com.kazurayam.misc.PipedStreamExampleTest.class)

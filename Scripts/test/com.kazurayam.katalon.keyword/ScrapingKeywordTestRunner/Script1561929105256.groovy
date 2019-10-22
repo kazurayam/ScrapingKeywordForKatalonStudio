@@ -1,9 +1,3 @@
-/**
- * Test Cases/test/com.kazurayam.katalon.keyword/ScrapingKeywordTestRunner
- */
-import com.kazurayam.katalon.keyword.ScrapingKeywordTest
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kazurayam.junit4ks.JUnitCustomKeywords as JUnit
 
-CustomKeywords.'com.kazurayam.junit4ks.JUnitCustomKeywords.runWithJUnitRunner'(ScrapingKeywordTest.class)
-
-WebUI.comment("done")
+JUnit.runWithJUnitRunner(com.kazurayam.katalon.keyword.ScrapingKeywordTest.class)

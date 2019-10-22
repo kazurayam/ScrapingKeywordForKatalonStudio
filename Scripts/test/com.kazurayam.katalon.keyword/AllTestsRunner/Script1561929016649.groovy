@@ -1,10 +1,5 @@
-import com.kazurayam.katalon.keyword.MailSenderTest
-import com.kazurayam.katalon.keyword.ScrapingClientTest
-import com.kazurayam.katalon.keyword.ScrapingKeywordTest
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kazurayam.junit4ks.JUnitCustomKeywords as JUnit
 
-CustomKeywords.'com.kazurayam.junit4ks.JUnitCustomKeywords.runWithJUnitRunner'(MailSenderTest.class)
-CustomKeywords.'com.kazurayam.junit4ks.JUnitCustomKeywords.runWithJUnitRunner'(ScrapingClientTest.class)
-CustomKeywords.'com.kazurayam.junit4ks.JUnitCustomKeywords.runWithJUnitRunner'(ScrapingKeywordTest.class)
-
-WebUI.comment("done")
+JUnit.runWithJUnitRunner(com.kazurayam.katalon.keyword.MailSenderTest.class)
+JUnit.runWithJUnitRunner(com.kazurayam.katalon.keyword.ScrapingClientTest.class)
+JUnit.runWithJUnitRunner(com.kazurayam.katalon.keyword.ScrapingKeywordTest.class)
