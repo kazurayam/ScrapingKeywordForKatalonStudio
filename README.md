@@ -38,9 +38,11 @@ The Problem.1 and Problem.2 are rather simple. Just I need a few custom keywords
 The Problem.3 --- how to detect a web page has been updated --- is a complexed task. Let me describe a bit more.
 
 In September, the page looked like this:
+
 ![september](docs/images/inSeptember.png)
 
 In October, the page looked like this:
+
 ![october](docs/images/inOctober.png)
 
 As you can see the date changed. From `2019年9月4日` to `2019年10月1日`. This is the change I mean. I need to detect this change in my solution in Katalon Studio. Is it possible?
