@@ -59,13 +59,13 @@ The Problem.1 (downloading files from web page into local) is solved by a custom
 
 The `ScrapingKeyword` uses another class which implements bytes transfer over HTTP.
 
-- [com.kazurayam.katalon.keyword.ScrapingClient](Keywords/com/kazurayam/katalon/keyword/ScrapingClient.groovy)
+-  [com.kazurayam.katalon.keyword.ScrapingClient](Keywords/com/kazurayam/katalon/keyword/ScrapingClient.groovy)
 
 
 
 The Problem.2 (sending email from Test Case script) is solved by a Groovy class
 
--[com.kazurayam.katalon.keyword.MailSender](Keywords/com/kazurayam/katalon/keyword/MailSender.groovy).
+- [com.kazurayam.katalon.keyword.MailSender](Keywords/com/kazurayam/katalon/keyword/MailSender.groovy).
 
 
 # Test Cases as demonstration
