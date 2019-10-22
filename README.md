@@ -1,9 +1,10 @@
-Espionage keywords for Katalon Studio
+Scraping Keyword for Katalon Studio
 ======================================
 
-A set of custom keywords for Web page monitoring and scraping in Katalon Studio
+# What is this?
 
-## downloading files (*.pdf, *.xlsx) from URL and saving them into local disk.
+# Problem to solve
 
-## sending Email
+# Problem analysis
 
+# Custom keywords provided
